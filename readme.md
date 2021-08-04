@@ -37,9 +37,31 @@ doEvenMoreStuff : 541.535541ms
 total           : 2718.798155ms
 ```
 
+Middleware
+----------
+```Go
+func main() {
+    router := chi.NewRouter()
+    router.Use(profiletimer.TimerMiddleware)
+    router.Get("/", get)
+    http.ListenAndServe(":80", router)
+}
+
+func get(w http.ResponseWriter, r *http.Request) {
+    timer := profiletimer.TimerFromContext(r.Context())
+    doSomeStuff()
+    timer.Step("doSomeStuff")
+    doSomeMoreStuff()
+    timer.Step("doSomeMoreStuff")
+    doEvenMoreStuff()
+    timer.Step("doEvenMoreStuff")
+}
+```
+
 ### Noop Timer
 
-Often, you'll want to leave the profile step functions in the code and only run them in  debug or profile mode. In this case you can use `StartProfileTimer()` when in debug mode, and otherwise instantiate the timer using `StartNoopTimer()`. 
+
+Often, you'll want to leave the profile step functions in the code and only run them in debug or profile mode. In this case you can use `StartProfileTimer()` when in debug mode, and otherwise instantiate the timer using `StartNoopTimer()`. 
 
 License
 -------
